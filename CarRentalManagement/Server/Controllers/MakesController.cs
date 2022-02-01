@@ -12,7 +12,8 @@ using CarRentalManagement.Server.IRepository;
 
 namespace CarRentalManagement.Server.Controllers
 {
-    [Route("[controller]")]
+    ////[Authorize]
+    [Route("api/[controller]")]
     [ApiController]
     public class MakesController : ControllerBase
     {
@@ -23,7 +24,7 @@ namespace CarRentalManagement.Server.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // GET: api/Makes
+        // GET: /Makes
         [HttpGet]
         public async Task<IActionResult> GetMakes()
         {

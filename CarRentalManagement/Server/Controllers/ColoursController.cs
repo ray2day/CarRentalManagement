@@ -12,7 +12,7 @@ using CarRentalManagement.Server.IRepository;
 
 namespace CarRentalManagement.Server.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ColoursController : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace CarRentalManagement.Server.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // GET: api/Colours
+        // GET: /Colours
         [HttpGet]
         public async Task<IActionResult> GetColours()
         {

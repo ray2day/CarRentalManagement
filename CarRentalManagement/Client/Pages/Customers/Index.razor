@@ -2,8 +2,8 @@
 @inject HttpClient _client
 @inject IJSRuntime js
 @attribute [Authorize]
-<h3 class="card-title">Customers</h3>
-<hr />
+
+<HeadingsComponent Text="Customers" />
 <br />
 
 <a href="/customers/create" class="btn btn-secondary">
@@ -17,10 +17,10 @@
 }
 else
 {
-    <table class="table table-responsive">
+    <table class="table">
         <thead>
             <tr>
-                <th>Tax ID</th>
+                <th>Full Name</th>
                 <th>Contact Number</th>
                 <th>Email Address</th>
                 <th>Actions</th>
@@ -30,15 +30,15 @@ else
             @foreach (var customer in Customers)
             {
             <tr>
-                <td>@customer.TaxId</td>
+                <td>@customer.FirstName @customer.LastName</td>
                 <td>@customer.ContactNumber</td>
                 <td>@customer.EmailAddress</td>
                 <td>
-                    <a href="/makes/view/@customer.Id" class="btn btn-primary">
+                    <a href="/customers/view/@customer.Id" class="btn btn-primary">
                         <span class="oi oi-book"></span>
                     </a>
-                    <a href="/makes/edit/@customer.Id" class="btn btn-warning">
-                        <span class="oi oi-book"></span>
+                    <a href="/customers/edit/@customer.Id" class="btn btn-warning">
+                        <span class="oi oi-pencil"></span>
                     </a>
                     <button class="btn btn-danger" @onclick="@(()=>Delete(customer.Id))">
                         <span class="oi oi-delete"></span>

@@ -9,6 +9,7 @@ using CarRentalManagement.Server.Data;
 using CarRentalManagement.Shared.Domain;
 using Microsoft.AspNetCore.Authorization;
 using CarRentalManagement.Server.IRepository;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CarRentalManagement.Server.Controllers
 {
@@ -17,10 +18,14 @@ namespace CarRentalManagement.Server.Controllers
     public class VehiclesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public VehiclesController(IUnitOfWork unitOfWork)
+        public VehiclesController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
+            this._webHostEnvironment = webHostEnvironment;
+            this._httpContextAccessor = httpContextAccessor;
         }
 
         // GET: /Vehicles
@@ -28,8 +33,8 @@ namespace CarRentalManagement.Server.Controllers
         public async Task<IActionResult> GetVehicles()
         {
             var includes = new List<string> { "Make", "Model", "Colour" };
-            var vehicles = await _unitOfWork.Vehicles.GetAll(includes: includes);
-            return Ok(vehicles);
+            var Vehicles = await _unitOfWork.Vehicles.GetAll(includes: includes);
+            return Ok(Vehicles);
         }
 
         // GET: /Vehicles/5
@@ -37,27 +42,31 @@ namespace CarRentalManagement.Server.Controllers
         public async Task<IActionResult> GetVehicle(int id)
         {
             var includes = new List<string> { "Make", "Model", "Colour", "Bookings" };
-            var vehicle = await _unitOfWork.Vehicles.Get(q => q.Id == id, includes);
+            var Vehicle = await _unitOfWork.Vehicles.Get(q => q.Id == id, includes);
 
-            if (vehicle == null)
+            if (Vehicle == null)
             {
                 return NotFound();
             }
 
-            return Ok(vehicle);
+            return Ok(Vehicle);
         }
 
         // PUT: /Vehicles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutVehicle(int id, Vehicle vehicle)
+        public async Task<IActionResult> PutVehicle(int id, Vehicle Vehicle)
         {
-            if (id != vehicle.Id)
+            if (id != Vehicle.Id)
             {
                 return BadRequest();
             }
+            if (Vehicle != null)
+            {
+                Vehicle.ImageName = CreateFile(Vehicle.Image, Vehicle.ImageName);
+            }
 
-            _unitOfWork.Vehicles.Update(vehicle);
+            _unitOfWork.Vehicles.Update(Vehicle);
 
             try
             {
@@ -81,20 +90,25 @@ namespace CarRentalManagement.Server.Controllers
         // POST: /Vehicles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Vehicle>> PostVehicle(Vehicle vehicle)
+        public async Task<ActionResult<Vehicle>> PostVehicle(Vehicle Vehicle)
         {
-            await _unitOfWork.Vehicles.Insert(vehicle);
+            if (Vehicle.Image != null)
+            {
+                Vehicle.ImageName = CreateFile(Vehicle.Image, Vehicle.ImageName);
+            }
+
+            await _unitOfWork.Vehicles.Insert(Vehicle);
             await _unitOfWork.Save(HttpContext);
 
-            return CreatedAtAction("GetVehicle", new { id = vehicle.Id }, vehicle);
+            return CreatedAtAction("GetVehicle", new { id = Vehicle.Id }, Vehicle);
         }
 
         // DELETE: /Vehicles/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVehicle(int id)
         {
-            var vehicle = await _unitOfWork.Vehicles.Get(q => q.Id == id);
-            if (vehicle == null)
+            var Vehicle = await _unitOfWork.Vehicles.Get(q => q.Id == id);
+            if (Vehicle == null)
             {
                 return NotFound();
             }
@@ -103,11 +117,19 @@ namespace CarRentalManagement.Server.Controllers
 
             return NoContent();
         }
-
+        private string CreateFile(byte[] image, string name)
+        {
+            var url = _httpContextAccessor.HttpContext.Request.Host.Value;
+            var path = $"{_webHostEnvironment.WebRootPath}\\uploads\\{name}";
+            var fileStream = System.IO.File.Create(path);
+            fileStream.Write(image, 0, image.Length);
+            fileStream.Close();
+            return $"https://{url}/uploads/{name}";
+        }
         private async Task<bool> VehicleExists(int id)
         {
-            var vehicle = await _unitOfWork.Vehicles.Get(q => q.Id == id);
-            return vehicle != null;
+            var Vehicle = await _unitOfWork.Vehicles.Get(q => q.Id == id);
+            return Vehicle != null;
         }
     }
 }

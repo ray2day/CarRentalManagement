@@ -1,9 +1,29 @@
-﻿<EditForm Model="@vehicle" OnValidSubmit="@OnValidSubmit">
+﻿<EditForm Model="@vehicle" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <fieldset disabled="@Disabled">
+        @if (Disabled)
+        {
+            <div class="form-group">
+                <label>Image (Optional):</label>
+                <div>
+                   <img src="@vehicle.ImageName" class="img-thumbnail" style="width:150px; height:150px" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label>Image (Optional):</label>
+                <div>
+                    <InputFile OnChange="HandleFileSelection" />
+                    <p class="text-danger">@UploadFileWarning</p>
+                </div>
+            </div>
+        }
+
         <div class="form-group">
-            <label>Make:</label>
+            <label>Make: </label>
             <div>
                 <select @bind="vehicle.MakeId" class="form-control">
                     <option value="">-- Select Make --</option>
@@ -21,7 +41,7 @@
         <div class="form-group">
             <label>Model: </label>
             <div>
-                <select @bind="vehicle.ModelId" class="form-control">
+                <InputSelect @bind-Value="vehicle.ModelId" class="form-control">
                     <option value="">-- Select Model --</option>
                     @if (Models != null)
                     {
@@ -30,7 +50,7 @@
                             <option value="@model.Id">@model.Name</option>
                         }
                     }
-                </select>
+                </InputSelect>
                 <ValidationMessage For="@(() => vehicle.ModelId)" />
             </div>
         </div>
@@ -47,39 +67,38 @@
                         }
                     }
                 </select>
-                <ValidationMessage For="@(() => vehicle.ColourId)" class="form-control" />
+                <ValidationMessage For="@(() => vehicle.ColourId)" />
             </div>
         </div>
         <div class="form-group">
-            <label>Year: </label>
+            <label>Year:</label>
             <div>
-                <InputNumber @bind-Value="vehicle.Year" class="form-control" />
+                <InputNumber @bind-Value="@vehicle.Year" class="form-control" />
                 <ValidationMessage For="@(() => vehicle.Year)" />
             </div>
         </div>
         <div class="form-group">
-            <label>License Plate Number: </label>
+            <label>License Plate Number:</label>
             <div>
-                <InputText @bind-Value="vehicle.LicensePlateNumber" class="form-control" />
+                <InputText @bind-Value="@vehicle.LicensePlateNumber" class="form-control" />
                 <ValidationMessage For="@(() => vehicle.LicensePlateNumber)" />
             </div>
         </div>
         <div class="form-group">
-            <label>Vehicle Identification Number: </label>
+            <label>Vehicle Identification Number:</label>
             <div>
-                <InputText @bind-Value="vehicle.Vin" class="form-control" />
+                <InputText @bind-Value="@vehicle.Vin" class="form-control" />
                 <ValidationMessage For="@(() => vehicle.Vin)" />
             </div>
         </div>
         <div class="form-group">
-            <label>Rental Rate: </label>
+            <label>Daily Rate:</label>
             <div>
-                <InputNumber @bind-Value="vehicle.RentalRate" class="form-control" />
+                <InputNumber @bind-Value="@vehicle.RentalRate" class="form-control" />
                 <ValidationMessage For="@(() => vehicle.RentalRate)" />
             </div>
         </div>
     </fieldset>
-
     @if (!Disabled)
     {
         <button type="submit" class="btn btn-success btn-block">
@@ -91,4 +110,5 @@
 
 
 @code {
+    
 }

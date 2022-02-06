@@ -9,19 +9,22 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace CarRentalManagement.Client.Pages.Vehicles
+namespace CarRentalManagement.Client.Pages.Bookings
 {
-    public partial class View
+    public partial class Create
     {
-        [Inject] IHttpRepository<Vehicle> _client { get; set; }
+        [Inject] IHttpRepository<Booking> _client { get; set; }
         [Inject] NavigationManager _navManager { get; set; }
 
-        [Parameter] public int id { get; set; }
-        Vehicle vehicle = new Vehicle();
-
-        protected async override Task OnParametersSetAsync()
+        Booking booking = new Booking
         {
-            vehicle = await _client.GetDetails(Endpoints.VehiclesEndpoint, id);
+            DateOut = DateTime.Now.Date
+        };
+
+        private async Task CreateBooking()
+        {
+            await _client.Create(Endpoints.BookingsEndpoint, booking);
+            _navManager.NavigateTo("/bookings/");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CarRentalManagement.Client.Static;
+﻿using CarRentalManagement.Client.Contracts;
+using CarRentalManagement.Client.Static;
 using CarRentalManagement.Shared.Domain;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -13,14 +14,14 @@ namespace CarRentalManagement.Client.Pages.Makes
 {
     public partial class Index
     {
-        [Inject] HttpClient _client { get; set; }
+        [Inject] IHttpRepository<Make> _client { get; set; }
         [Inject] IJSRuntime js { get; set; }
 
         private List<Make> Makes;
 
         protected async override Task OnInitializedAsync()
         {
-            Makes = await _client.GetFromJsonAsync<List<Make>>($"{Endpoints.MakesEndpoint}");
+            Makes = await _client.GetAll(Endpoints.MakesEndpoint);
         }
 
         async Task Delete(int makeId)
@@ -29,7 +30,7 @@ namespace CarRentalManagement.Client.Pages.Makes
             var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {make.Name}?");
             if (confirm)
             {
-                await _client.DeleteAsync($"{Endpoints.MakesEndpoint}/{makeId}");
+                await _client.Delete(Endpoints.MakesEndpoint, makeId);
                 await OnInitializedAsync();
             }
         }

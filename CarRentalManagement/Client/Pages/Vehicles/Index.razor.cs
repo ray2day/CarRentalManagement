@@ -1,4 +1,5 @@
-﻿using CarRentalManagement.Client.Static;
+﻿using CarRentalManagement.Client.Contracts;
+using CarRentalManagement.Client.Static;
 using CarRentalManagement.Shared.Domain;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -13,23 +14,23 @@ namespace CarRentalManagement.Client.Pages.Vehicles
 {
     public partial class Index
     {
-        [Inject] HttpClient _client { get; set; }
+        [Inject] IHttpRepository<Vehicle> _client { get; set; }
         [Inject] IJSRuntime js { get; set; }
 
         private List<Vehicle> Vehicles;
 
         protected async override Task OnInitializedAsync()
         {
-            Vehicles = await _client.GetFromJsonAsync<List<Vehicle>>($"{Endpoints.VehiclesEndpoint}");
+            Vehicles = await _client.GetAll($"{Endpoints.VehiclesEndpoint}");
         }
 
         async Task Delete(int vehicleId)
         {
             var vehicle = Vehicles.First(q => q.Id == vehicleId);
-            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {vehicle.Id}?");
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {vehicle.Vin}?");
             if (confirm)
             {
-                await _client.DeleteAsync($"{Endpoints.VehiclesEndpoint}/{vehicleId}");
+                await _client.Delete(Endpoints.VehiclesEndpoint, vehicleId);
                 await OnInitializedAsync();
             }
         }

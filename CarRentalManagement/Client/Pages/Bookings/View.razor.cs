@@ -6,22 +6,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace CarRentalManagement.Client.Pages.Vehicles
+namespace CarRentalManagement.Client.Pages.Bookings
 {
     public partial class View
     {
-        [Inject] IHttpRepository<Vehicle> _client { get; set; }
+        [Inject] IHttpRepository<Booking> _client { get; set; }
         [Inject] NavigationManager _navManager { get; set; }
 
         [Parameter] public int id { get; set; }
-        Vehicle vehicle = new Vehicle();
+
+        Booking booking = new Booking();
 
         protected async override Task OnParametersSetAsync()
         {
-            vehicle = await _client.GetDetails(Endpoints.VehiclesEndpoint, id);
+            booking = await _client.Get(Endpoints.BookingsEndpoint, id);
         }
     }
 }

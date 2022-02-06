@@ -1,4 +1,5 @@
-﻿using CarRentalManagement.Client.Static;
+﻿using CarRentalManagement.Client.Contracts;
+using CarRentalManagement.Client.Static;
 using CarRentalManagement.Shared.Domain;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -12,7 +13,7 @@ namespace CarRentalManagement.Client.Pages.Makes
 {
     public partial class View
     {
-        [Inject] HttpClient _client { get; set; }
+        [Inject] IHttpRepository<Make> _client { get; set; }
         [Inject] NavigationManager _navManager { get; set; }
 
         [Parameter] public int id { get; set; }
@@ -20,7 +21,7 @@ namespace CarRentalManagement.Client.Pages.Makes
 
         protected async override Task OnParametersSetAsync()
         {
-            make = await _client.GetFromJsonAsync<Make>($"{Endpoints.MakesEndpoint}/{id}");
+            make = await _client.Get(Endpoints.MakesEndpoint, id);
         }
     }
 }

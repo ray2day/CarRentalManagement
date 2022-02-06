@@ -1,7 +1,4 @@
 ﻿@page "/bookings/"
-@inject HttpClient _client
-@inject IJSRuntime js
-@implements IDisposable
 @attribute [Authorize]
 
 <HeadingsComponent Text="Bookings" />
@@ -55,31 +52,4 @@ else
 }
 
 @code {
-    private List<Booking> Bookings;
-
-    protected async override Task OnInitializedAsync()
-    {
-        Bookings = await _client.GetFromJsonAsync<List<Booking>>($"{Endpoints.BookingsEndpoint}");
-    }
-
-    protected async override Task OnAfterRenderAsync(bool firstRender)
-    {
-        await js.InvokeVoidAsync("AddDataTable", "#bookingsTable");
-    }
-
-    void IDisposable.Dispose()
-    {
-        js.InvokeVoidAsync("DataTablesDispose", "#bookingsTable");
-    }
-
-    async Task Delete(int bookingsId)
-    {
-        var bookings = Bookings.First(q => q.Id == bookingsId);
-        var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {bookings.Customer}?");
-        if (confirm)
-        {
-            await _client.DeleteAsync($"{Endpoints.BookingsEndpoint}/{bookingsId}");
-            await OnInitializedAsync();
-        }
-    }
 }

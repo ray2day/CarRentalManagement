@@ -1,4 +1,5 @@
-﻿<EditForm Model="@vehicle" OnValidSubmit="OnValidSubmit">
+﻿@inject HttpClient _client
+<EditForm Model="@vehicle" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
     <fieldset disabled="@Disabled">
@@ -7,7 +8,7 @@
             <div class="form-group">
                 <label>Image (Optional):</label>
                 <div>
-                   <img src="@vehicle.ImageName" class="img-thumbnail" style="width:150px; height:150px" />
+                   <img src="@vehicle.ImageName" class="img-thumbnail" style="width:150px; height: auto" />
                 </div>
             </div>
         }

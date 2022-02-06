@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace CarRentalManagement.Client.Pages.Vehicles
@@ -20,25 +18,25 @@ namespace CarRentalManagement.Client.Pages.Vehicles
         string UploadFileWarning;
 
         [Inject] IHttpRepository<Make> _clientMakes { get; set; }
-        [Inject] IHttpRepository<Colour> _clientColours { get; set; }
+        [Inject] IHttpRepository<Colour> _clientColors { get; set; }
         [Inject] IHttpRepository<Model> _clientModels { get; set; }
+
         [Parameter] public bool Disabled { get; set; } = false;
         [Parameter] public Vehicle vehicle { get; set; }
         [Parameter] public string ButtonText { get; set; } = "Save";
         [Parameter] public EventCallback OnValidSubmit { get; set; }
 
-
         protected async override Task OnInitializedAsync()
         {
             Models = await _clientModels.GetAll(Endpoints.ModelsEndpoint);
-            Colours = await _clientColours.GetAll(Endpoints.ColoursEndpoint);
+            Colours = await _clientColors.GetAll(Endpoints.ColoursEndpoint);
             Makes = await _clientMakes.GetAll(Endpoints.MakesEndpoint);
         }
 
         private async void HandleFileSelection(InputFileChangeEventArgs e)
         {
             var file = e.File;
-            if(file != null)
+            if (file != null)
             {
                 var ext = System.IO.Path.GetExtension(file.Name);
                 if (ext.ToLower().Contains("jpg")

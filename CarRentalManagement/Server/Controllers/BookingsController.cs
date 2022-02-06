@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CarRentalManagement.Server.Data;
 using CarRentalManagement.Shared.Domain;
-using Microsoft.AspNetCore.Authorization;
 using CarRentalManagement.Server.IRepository;
 
 namespace CarRentalManagement.Server.Controllers
@@ -27,42 +26,43 @@ namespace CarRentalManagement.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBookings()
         {
-            var includes = new List<string> { "Vehicle", "Customer" };
-            var bookings = await _unitOfWork.Bookings.GetAll(includes: includes);
-            return Ok(bookings);
+            var Bookings = await _unitOfWork.Bookings.GetAll(includes: q => q.Include(x => x.Vehicle)
+                .Include(x => x.Customer));
+            return Ok(Bookings);
         }
 
         // GET: /Bookings/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBooking(int id)
         {
-            var includes = new List<string> { "Vehicle", "Customer" }; 
-            var booking = await _unitOfWork.Bookings.Get(q => q.Id == id, includes);
-            if (booking == null)
+            var Booking = await _unitOfWork.Bookings.Get(q => q.Id == id, includes: q => q.Include(x => x.Vehicle)
+                .Include(x => x.Customer));
+
+            if (Booking == null)
             {
                 return NotFound();
             }
 
-            return Ok(booking);
+            return Ok(Booking);
         }
 
-        // PUT: /Bookings/5
+        // PUT: api/Bookings/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBooking(int id, Booking booking)
+        public async Task<IActionResult> PutBooking(int id, Booking Booking)
         {
-            if (id != booking.Id)
+            if (id != Booking.Id)
             {
                 return BadRequest();
             }
 
-            _unitOfWork.Bookings.Update(booking);
+            _unitOfWork.Bookings.Update(Booking);
 
             try
             {
                 await _unitOfWork.Save(HttpContext);
             }
-            catch (DbUpdateConcurrencyException)            // concurrency violation -> rij updaten die niet meer aanwezig is in database
+            catch (DbUpdateConcurrencyException)
             {
                 if (!await BookingExists(id))
                 {
@@ -77,23 +77,23 @@ namespace CarRentalManagement.Server.Controllers
             return NoContent();
         }
 
-        // POST: /Bookings
+        // POST: api/Bookings
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Booking>> PostBooking(Booking booking)
+        public async Task<ActionResult<Booking>> PostBooking(Booking Booking)
         {
-            await _unitOfWork.Bookings.Insert(booking);
+            await _unitOfWork.Bookings.Insert(Booking);
             await _unitOfWork.Save(HttpContext);
 
-            return CreatedAtAction("GetBooking", new { id = booking.Id }, booking);
+            return CreatedAtAction("GetBooking", new { id = Booking.Id }, Booking);
         }
 
-        // DELETE: /Bookings/5
+        // DELETE: api/Bookings/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {
-            var booking = await _unitOfWork.Bookings.Get(q => q.Id == id);
-            if (booking == null)
+            var Booking = await _unitOfWork.Bookings.Get(q => q.Id == id);
+            if (Booking == null)
             {
                 return NotFound();
             }
@@ -105,8 +105,8 @@ namespace CarRentalManagement.Server.Controllers
 
         private async Task<bool> BookingExists(int id)
         {
-            var booking = await _unitOfWork.Bookings.Get(q => q.Id == id);
-            return booking != null;
+            var Booking = await _unitOfWork.Bookings.Get(q => q.Id == id);
+            return Booking == null;
         }
     }
 }

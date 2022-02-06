@@ -1,14 +1,14 @@
-﻿using CarRentalManagement.Client.Contracts;
-using CarRentalManagement.Client.Static;
+﻿using CarRentalManagement.Client.Static;
 using CarRentalManagement.Shared.Domain;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
+using CarRentalManagement.Client.Contracts;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using CarRentalManagement.Client.Services;
 
 namespace CarRentalManagement.Client.Pages.Vehicles
 {
@@ -18,7 +18,6 @@ namespace CarRentalManagement.Client.Pages.Vehicles
         [Inject] IJSRuntime js { get; set; }
 
         private List<Vehicle> Vehicles;
-
         protected async override Task OnInitializedAsync()
         {
             Vehicles = await _client.GetAll($"{Endpoints.VehiclesEndpoint}");
@@ -34,5 +33,6 @@ namespace CarRentalManagement.Client.Pages.Vehicles
                 await OnInitializedAsync();
             }
         }
+
     }
 }
